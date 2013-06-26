@@ -1,0 +1,10 @@
+# This version of customizepkg simply calls script files in this directory that
+# have a file name matching the pkgname of the PKGBUILD being used.
+#
+# You can script whatever you want done to the PKGBUILD or install file with
+# very little restriction. sed, patch, whatever you want to do.
+#
+# Make sure you set the scripts as world executable (chmod +x <filename>)
+#
+# $1=PKGBUILD file to be modified
+# $2=install script to be modified
