@@ -44,49 +44,14 @@ version() {
 }
 modify_file()
 {
-	configfile=$1
-	originalscriptfile=$2
-	scriptfile=$3
-	grep --invert-match "\(^#\|^$\)" $configfile |
-	while read line; do
-		unset action context pattern value
-		action=`echo $line | awk -F "#" '{print $1}'`
-		context=`echo $line | awk -F "#" '{print $2}'`
-		pattern=`echo $line | awk -F "#" '{print $3}'`
-		#echo "action=$action , context=$context  , pattern=$pattern"
-		case $action in
-			remove|replace)
-				value=`echo $line | awk -F [^#]# '{print $4}'`
-				echo "=> removes/replaces '$pattern' by '$value' in $context"
-				if [ "$action" = "replace" -a "$context" != "global" ]; then
-					value=" '$(echo $value | tr -d "\'")'"
-				fi
-				if [ "$context" != "global" ]; then
-					pattern="$pattern[<>=]*[a-z0-9.]*"
-				fi
-				if [ "$context" = "global" ]; then
-					sed -i "s/$pattern/$value/g" "$scriptfile"
-				else
-					sed -i "/^$context=/,/)$/ s/[[:space:]]*[']*$pattern[']*/$value/g" "$scriptfile"
-				fi
-				;;
-			add)
-				value=" '$(echo $pattern | tr -d "\'")'"
-				echo "=> adds $value in $context"
-				# add the full line if it doesn't exist or just the value
-				if grep --quiet "^$context=" "$scriptfile"; then
-					sed -i "s/^$context=(/&$value /1" "$scriptfile"
-				else
-					sed -i "/^build/i$context=($value)\n" "$scriptfile"
-				fi
-				;;
-			*)
-				echo "error: unknow action '$action'"
-				;;
-		esac
-	done
-	[ $VIMDIFF -eq 1 ] && vim -d "$scriptfile" "$originalscriptfile"	
-	diff -Naur "$originalscriptfile" "$scriptfile"	
+	scriptfile=$1
+	originalPKGBUILD=$2
+	PKGBUILD=$3
+
+	/bin/bash $scriptfile $PKGBUILD
+
+	[ $VIMDIFF -eq 1 ] && vim -d "$PKGBUILD" "$originalPKGBUILD"	
+	diff -Naur "$originalPKGBUILD" "$PKGBUILD"	
 	return 0
 }
 
@@ -123,7 +88,7 @@ if [ ! -r "$CONFIGDIR/$pkgname" ]; then
 fi
 #TODO: PKGBUILD + file.install
 cp ./PKGBUILD ./PKGBUILD.custom
-modify_file "$CONFIGDIR/$pkgname" "./PKGBUILD" "./PKGBUILD.custom" || exit 1
+modify_file "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD" "$PWD/PKGBUILD.custom" || exit 1
 if [ $MODIFY -eq 1 ]; then
 	cp ./PKGBUILD ./PKGBUILD.original
 	cp ./PKGBUILD.custom ./PKGBUILD
