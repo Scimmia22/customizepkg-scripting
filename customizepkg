@@ -47,11 +47,14 @@ modify_file()
 	scriptfile=$1
 	originalPKGBUILD=$2
 	PKGBUILD=$3
+	originalinstallfile=$4
+	installfile=$5
 
-	/bin/bash $scriptfile $PKGBUILD
+	/bin/bash $scriptfile $PKGBUILD $installfile
 
-	[ $VIMDIFF -eq 1 ] && vim -d "$PKGBUILD" "$originalPKGBUILD"	
+	[ $VIMDIFF -eq 1 ] && vim -d "$PKGBUILD" "$originalPKGBUILD" && vim -d "$installfile" "$originalinstallfile"
 	diff -Naur "$originalPKGBUILD" "$PKGBUILD"	
+	diff -Naur "$originalinstallfile" "$installfile"
 	return 0
 }
 
@@ -88,10 +91,13 @@ if [ ! -r "$CONFIGDIR/$pkgname" ]; then
 fi
 #TODO: PKGBUILD + file.install
 cp ./PKGBUILD ./PKGBUILD.custom
-modify_file "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD" "$PWD/PKGBUILD.custom" || exit 1
+cp ./$install ./$install.custom
+modify_file "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD" "$PWD/PKGBUILD.custom" "$PWD/$install" "$PWD/$install" || exit 1
 if [ $MODIFY -eq 1 ]; then
 	cp ./PKGBUILD ./PKGBUILD.original
 	cp ./PKGBUILD.custom ./PKGBUILD
+	cp ./$install ./$install.original
+	cp ./$install.custom ./$install
 fi
 
 
