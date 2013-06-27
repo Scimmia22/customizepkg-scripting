@@ -85,6 +85,12 @@ if [ ! -r ./PKGBUILD ]; then
 fi
 source ./PKGBUILD || exit 1
 
+if [[ $pkgroot ]]; then
+    pkgname=$pkgroot
+elif [[ $(declare -p variable-name 2> /dev/null | grep -q 'declare \-a') ]]; then
+    pkgname=$pkgname[1]
+fi
+
 if [ ! -r "$CONFIGDIR/$pkgname" ]; then
 	echo "no configuration found for $pkgname in $CONFIGDIR/"
 	exit 1

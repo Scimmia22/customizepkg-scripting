@@ -1,5 +1,7 @@
 # This version of customizepkg simply calls script files in this directory that
-# have a file name matching the pkgname of the PKGBUILD being used.
+# have a file name matching the pkgname of the PKGBUILD being used. If the
+# PKGBUILD is a split package, it will use the pkgbase variable if present; if
+# not, it will use the first entry listed in the pkgname array.
 #
 # You can script whatever you want done to the PKGBUILD or install file with
 # very little restriction. sed, patch, whatever you want to do.
