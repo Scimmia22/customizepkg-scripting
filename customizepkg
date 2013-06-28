@@ -50,7 +50,7 @@ modify_file()
 	originalinstallfile=$4
 	installfile=$5
 
-	/bin/bash $scriptfile $PKGBUILD $installfile
+	$scriptfile $PKGBUILD $installfile
 
 	[ $VIMDIFF -eq 1 ] && vim -d "$PKGBUILD" "$originalPKGBUILD" && vim -d "$installfile" "$originalinstallfile"
 	diff -Naur "$originalPKGBUILD" "$PKGBUILD"	
