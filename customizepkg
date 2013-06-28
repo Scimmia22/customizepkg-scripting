@@ -1,5 +1,5 @@
 #!/bin/bash
-ver=0.2.1
+ver=0.3.0
 #
 # customizepkg => modify PKGBUILD before building
 # <wain@archlinux.fr>
