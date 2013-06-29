@@ -97,9 +97,9 @@ modify_file "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD" "$PWD/PKGBUILD.custom" "$PWD/$
 
 if [[ $MODIFY -eq 1 ]]; then
   cp ./PKGBUILD ./PKGBUILD.original
-  cp ./PKGBUILD.custom ./PKGBUILD
+  mv ./PKGBUILD.custom ./PKGBUILD
   cp ./$install ./$install.original
-  cp ./$install.custom ./$install
+  mv ./$install.custom ./$install
 fi
 
 exit 0
