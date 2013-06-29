@@ -36,33 +36,18 @@ usage() {
 
   exit 0
 }
+
 version() {
   echo "$NAME-scripting - version $ver"
 
   exit 0
-}
-modify_file()
-{
-  scriptfile=$1
-  originalPKGBUILD=$2
-  PKGBUILD=$3
-  originalinstallfile=$4
-  installfile=$5
-
-  $scriptfile $PKGBUILD $installfile
-
-  [[ $VIMDIFF -eq 1 ]] && vim -d "$PKGBUILD" "$originalPKGBUILD" && vim -d "$installfile" "$originalinstallfile"
-
-  diff -Naur "$originalPKGBUILD" "$PKGBUILD"	
-  diff -Naur "$originalinstallfile" "$installfile"
-
-  return 0
 }
 
 ########################
 # Main Program
 VIMDIFF=0
 MODIFY=0
+
 while [[ "$#" -ne "0" ]]; do
   case $1 in
     -h | --help) usage ;;
@@ -73,7 +58,7 @@ while [[ "$#" -ne "0" ]]; do
   shift
 done
 
-if [ ! -r ./PKGBUILD ]; then
+if [[ ! -r ./PKGBUILD ]]; then
   echo "PKGBUILD not found"
   exit 1
 fi
@@ -87,13 +72,22 @@ elif [[ $(declare -p variable-name 2> /dev/null | grep -q 'declare \-a') ]]; the
 fi
 
 if [[ ! -r "$CONFIGDIR/$pkgname" ]]; then
-  echo "no configuration found for $pkgname in $CONFIGDIR/"
+  echo "no script found for $pkgname in $CONFIGDIR/"
   exit 1
 fi
 
 cp ./PKGBUILD ./PKGBUILD.custom
 cp ./$install ./$install.custom
-modify_file "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD" "$PWD/PKGBUILD.custom" "$PWD/$install" "$PWD/$install" || exit 1
+
+"$CONFIGDIR/$pkgname" "$PWD/PKGBUILD.custom" "$PWD/$install.custom" || exit 1
+
+if [[ $VIMDIFF -eq 1 ]]; then
+  vim -d "./PKGBUILD" "./PKGBUILD.custom"
+  vim -d "./$install" "./$install.custom"
+else
+  diff -Nau "./PKGBUILD" "./PKGBUILD.custom"	
+  diff -Nau "./$install" "./$install.custom"
+fi
 
 if [[ $MODIFY -eq 1 ]]; then
   cp ./PKGBUILD ./PKGBUILD.original
