@@ -1,6 +1,6 @@
 #!/bin/bash
-ver=0.3.0
-#
+ver=0.4.0
+
 # customizepkg => modify PKGBUILD before building
 #
 # Copyright (C) 2007-2013  Wain (original) & Doug Newgard (scripting ver)
@@ -18,7 +18,7 @@ ver=0.3.0
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-NAME=`basename $0`
+NAME=$(basename $0)
 CONFIGDIR="/etc/$NAME.d"
 
 usage() {
