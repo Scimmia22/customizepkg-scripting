@@ -2,8 +2,6 @@
 ver=0.3.0
 #
 # customizepkg => modify PKGBUILD before building
-# <wain@archlinux.fr>
-#
 #
 #   This program is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,43 +17,41 @@ NAME=`basename $0`
 CONFIGDIR="/etc/$NAME.d"
 
 usage() {
-   echo "$NAME - version $ver"
-   echo
-   echo "Without any option, $NAME read PKGBUILD in current directory and show a diff between original PKGBUILD and customized PKGBUILD."
-   echo "$NAME read configuration in /etc/customizepkg.d/\$pkgname file"
-   echo
-   echo "usage: $NAME <option>"
-   echo
-   echo "$NAME --version, -V       shows version"
-   echo "$NAME --help,    -h       shows this help"
-   echo "$NAME --modify,  -m       apply the modification in PKGBUILD file"
-   echo "$NAME --vimdiff, -v       show diff between customised file and original file with vimdiff"
-   echo
-   echo "see /etc/customizepkg.d/mplayer.example for example"
-   echo
-   echo "written by <wain@archlinux.fr>"
-   echo " homepage: http://archlinux.fr/"
+  echo "$NAME - version $ver"
+  echo
+  echo "Without any options, $NAME reads the PKGBUILD in the current directory and shows a diff between the original PKGBUILD and the customized PKGBUILD."
+  echo "$NAME reads scripts in /etc/customizepkg.d/\$pkgname"
+  echo
+  echo "usage: $NAME <option>"
+  echo
+  echo "$NAME --version, -V       shows version"
+  echo "$NAME --help,    -h       shows this help"
+  echo "$NAME --modify,  -m       apply the modification to the PKGBUILD file"
+  echo "$NAME --vimdiff, -v       show diff between customised file and original file with vimdiff"
+
+  exit 0
 }
 version() {
-   echo "$NAME - version $ver"
-   echo
-   echo "        http://archlinux.fr/"
-   exit 0
+  echo "$NAME - version $ver"
+
+  exit 0
 }
 modify_file()
 {
-	scriptfile=$1
-	originalPKGBUILD=$2
-	PKGBUILD=$3
-	originalinstallfile=$4
-	installfile=$5
+  scriptfile=$1
+  originalPKGBUILD=$2
+  PKGBUILD=$3
+  originalinstallfile=$4
+  installfile=$5
 
-	$scriptfile $PKGBUILD $installfile
+  $scriptfile $PKGBUILD $installfile
 
-	[ $VIMDIFF -eq 1 ] && vim -d "$PKGBUILD" "$originalPKGBUILD" && vim -d "$installfile" "$originalinstallfile"
-	diff -Naur "$originalPKGBUILD" "$PKGBUILD"	
-	diff -Naur "$originalinstallfile" "$installfile"
-	return 0
+  [[ $VIMDIFF -eq 1 ]] && vim -d "$PKGBUILD" "$originalPKGBUILD" && vim -d "$installfile" "$originalinstallfile"
+
+  diff -Naur "$originalPKGBUILD" "$PKGBUILD"	
+  diff -Naur "$originalinstallfile" "$installfile"
+
+  return 0
 }
 
 ########################
@@ -63,48 +59,41 @@ modify_file()
 VIMDIFF=0
 MODIFY=0
 while [ "$#" -ne "0" ]; do
-	case $1 in
-		-h|--help)
-			usage
-			exit 0
-			;;
-		--version|-V) version;;
-		-m|--modify)
-			MODIFY=1
-			;;
-		--vimdiff|-v)
-			VIMDIFF=1
-			;;
-	esac
-	shift
+  case $1 in
+    -h | --help) usage ;;
+    -V | --version) version ;;
+    -m | --modify) MODIFY=1 ;;
+    -v | --vimdiff) VIMDIFF=1 ;;
+  esac
+  shift
 done
 
 if [ ! -r ./PKGBUILD ]; then
-	echo "PKGBUILD not found"
-	exit 1
+  echo "PKGBUILD not found"
+  exit 1
 fi
 source ./PKGBUILD || exit 1
 
 if [[ $pkgroot ]]; then
-    pkgname=$pkgroot
+  pkgname=$pkgroot
 elif [[ $(declare -p variable-name 2> /dev/null | grep -q 'declare \-a') ]]; then
-    pkgname=$pkgname[1]
+  pkgname=$pkgname[1]
 fi
 
 if [ ! -r "$CONFIGDIR/$pkgname" ]; then
-	echo "no configuration found for $pkgname in $CONFIGDIR/"
-	exit 1
+  echo "no configuration found for $pkgname in $CONFIGDIR/"
+  exit 1
 fi
-#TODO: PKGBUILD + file.install
+
 cp ./PKGBUILD ./PKGBUILD.custom
 cp ./$install ./$install.custom
 modify_file "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD" "$PWD/PKGBUILD.custom" "$PWD/$install" "$PWD/$install" || exit 1
-if [ $MODIFY -eq 1 ]; then
-	cp ./PKGBUILD ./PKGBUILD.original
-	cp ./PKGBUILD.custom ./PKGBUILD
-	cp ./$install ./$install.original
-	cp ./$install.custom ./$install
-fi
 
+if [[ $MODIFY -eq 1 ]]; then
+  cp ./PKGBUILD ./PKGBUILD.original
+  cp ./PKGBUILD.custom ./PKGBUILD
+  cp ./$install ./$install.original
+  cp ./$install.custom ./$install
+fi
 
 exit 0
