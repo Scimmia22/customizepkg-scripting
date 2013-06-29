@@ -20,7 +20,7 @@ usage() {
   echo "$NAME - version $ver"
   echo
   echo "Without any options, $NAME reads the PKGBUILD in the current directory and shows a diff between the original PKGBUILD and the customized PKGBUILD."
-  echo "$NAME reads scripts in /etc/customizepkg.d/\$pkgname"
+  echo "$NAME reads scripts in /etc/$NAME.d/"
   echo
   echo "usage: $NAME <option>"
   echo
