@@ -54,6 +54,7 @@ while [[ "$#" -ne "0" ]]; do
     -V | --version) version ;;
     -m | --modify) MODIFY=1 ;;
     -v | --vimdiff) VIMDIFF=1 ;;
+    *) echo -e "Invalid option $1\n" && usage ;;
   esac
   shift
 done
