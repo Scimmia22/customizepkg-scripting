@@ -78,23 +78,23 @@ if [[ ! -r "$CONFIGDIR/$pkgname" ]]; then
 fi
 
 cp ./PKGBUILD ./PKGBUILD.custom
-cp ./$install ./$install.custom
+[[ $install ]] && cp ./$install ./$install.custom
 
 "$CONFIGDIR/$pkgname" "$PWD/PKGBUILD.custom" "$PWD/$install.custom" || exit 1
 
 if [[ $VIMDIFF -eq 1 ]]; then
   vim -d ./PKGBUILD ./PKGBUILD.custom
-  vim -d "./$install" "./$install.custom"
+  [[ $install ]] && vim -d "./$install" "./$install.custom"
 else
   diff -Nau ./PKGBUILD ./PKGBUILD.custom
-  diff -Nau "./$install" "./$install.custom"
+  [[ $install ]] && diff -Nau "./$install" "./$install.custom"
 fi
 
 if [[ $MODIFY -eq 1 ]]; then
   cp ./PKGBUILD ./PKGBUILD.original
   mv ./PKGBUILD.custom ./PKGBUILD
-  cp "./$install" "./$install.original"
-  mv "./$install.custom" "./$install"
+  [[ $install ]] && cp "./$install" "./$install.original"
+  [[ $install ]] && mv "./$install.custom" "./$install"
 fi
 
 exit 0
