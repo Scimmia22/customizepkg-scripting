@@ -66,8 +66,8 @@ fi
 
 source ./PKGBUILD || exit 1
 
-if [[ $pkgroot ]]; then
-  pkgname=$pkgroot
+if [[ $pkgbase ]]; then
+  pkgname=$pkgbase
 elif [[ $(declare -p variable-name 2> /dev/null | grep -q 'declare \-a') ]]; then
   pkgname=$pkgname[1]
 fi
